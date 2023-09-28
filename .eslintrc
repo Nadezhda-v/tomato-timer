@@ -192,7 +192,7 @@
       2,
       {
         "CallExpression": {
-          "arguments": 2
+          "arguments": 1
         },
         "FunctionDeclaration": {
           "body": 1,
@@ -202,7 +202,7 @@
           "body": 1,
           "parameters": 2
         },
-        "MemberExpression": 2,
+        "MemberExpression": 1,
         "ObjectExpression": 1,
         "SwitchCase": 1,
         "ignoredNodes": [
@@ -261,16 +261,7 @@
         "allowTemplateLiterals": true
       }
     ],
-    "require-jsdoc": [
-      "error",
-      {
-        "require": {
-          "FunctionDeclaration": true,
-          "MethodDefinition": true,
-          "ClassDeclaration": true
-        }
-      }
-    ],
+    
     "semi": "error",
     "semi-spacing": "error",
     "space-before-blocks": "error",
