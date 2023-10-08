@@ -1,6 +1,3 @@
-import { timerText } from './getElements';
-import { startDeadlineTimer } from './control';
-
 export class Timer {
   constructor({ time = 1, pause = 0.2, bigPause = 15, listTasks = [] }) {
     if (Timer.instance) {
@@ -46,16 +43,11 @@ export class Timer {
       return;
     }
 
-    let [minutes, seconds] = timerText.textContent.split(':');
-    minutes = Math.floor(minutes);
-    timerText.textContent = `${minutes}:${seconds}`;
-
     const timeInSeconds = time * 60;
     if (this.timerId) {
       clearTimeout(this.timerId);
     }
     this.updateTimerDisplay(timeInSeconds);
-    startDeadlineTimer();
   }
 
   // Обновить время на странице
@@ -65,6 +57,7 @@ export class Timer {
 
     const formattedMinutes = minutes.toString().padStart(2, '0');
     const formattedSeconds = seconds.toString().padStart(2, '0');
+    const timerText = document.querySelector('.window__timer-text');
 
     timerText.textContent = `${formattedMinutes}:${formattedSeconds}`;
 
@@ -77,6 +70,7 @@ export class Timer {
 
     if (timeInSeconds <= 0) {
       clearTimeout(this.timerId);
+      console.log(this.activeTask);
 
       if (this.activeTask.count === 0) {
         this.runTask(this.pause);

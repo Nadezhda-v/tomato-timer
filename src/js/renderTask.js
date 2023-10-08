@@ -1,11 +1,6 @@
 import {
   el,
-  mount,
 } from 'redom';
-
-import {
-  questTasks,
-} from './getElements';
 
 export class RenderTask {
   constructor(task, countList) {
@@ -30,6 +25,6 @@ export class RenderTask {
         ]),
       ]);
 
-    mount(questTasks, this.el);
+    return this.el;
   }
 }
