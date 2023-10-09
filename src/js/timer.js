@@ -1,5 +1,5 @@
 export class Timer {
-  constructor({ time = 1, pause = 0.2, bigPause = 15, listTasks = [] }) {
+  constructor({ time = 25, pause = 5, bigPause = 15, listTasks = [] }) {
     if (Timer.instance) {
       return Timer.instance;
     }
