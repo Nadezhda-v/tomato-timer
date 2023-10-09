@@ -27,7 +27,7 @@ export class RenderTomato {
       el('section.header', [
         el('div.container.header__container', [
           el('img.header__logo', {
-            src: 'img/svg/noto_tomato.svg',
+            src: require('../img/svg/noto_tomato.svg'),
             alt: 'Tomato image',
           }),
           el('h1.header__title', 'Tomato timer'),
@@ -161,10 +161,22 @@ export class RenderTomato {
   formSubmitClick = (e) => {
     e.preventDefault();
     const taskForm = this.main.taskForm;
-    if (taskForm.inputTitleTask.value === '') return;
+    const questTasks = this.main.questTasks;
+    const taskFormValue = taskForm.inputTitleTask.value.trim();
+    if (taskFormValue === '') return;
+
+    const delListTasks = this.controller.handleListTasks();
+    const tasks = questTasks.querySelectorAll('li');
+
+    if (tasks.length > 0 && delListTasks) {
+      for (const task of tasks) {
+        task.remove();
+      }
+    }
+    this.сongigureInitialValues();
 
     const formData = new FormData(taskForm);
-    const title = formData.get('task-name');
+    const title = formData.get('task-name').trim();
     const importanceValue = taskForm.buttonImportance
       .getAttribute('data-importance');
     const { task, deadlineTime } =
@@ -182,7 +194,7 @@ export class RenderTomato {
       importanceLevels.length;
   };
 
-  // Активировать задачу и переместить в начало списка
+  // Активировать задачу и переместить ее в начало списка
   taskTextClick = (task, taskId) => {
     if (!timer.activeTask || taskId !== timer.activeTask.id) {
       const activeTaskIndex = this.controller.handleActiveTask(taskId);
@@ -199,18 +211,10 @@ export class RenderTomato {
 
   deleteButtonClick = () => {
     const deadlineTime = this.controller.handleDeadlineTime();
+    this.updateDeadlineTimer(deadlineTime);
 
-    if (timer.listTasks.length > 0 && deadlineTime > 0) {
-      this.updateDeadlineTimer(deadlineTime);
-    }
-
-    if (timer.listTasks.length > 0) {
-      // timer.activeTask = null;
-      this.updateWindowPanel();
-    } else {
-      this.controller.handleDeadlineTime();
-      this.сongigureInitialValues();
-    }
+    timer.listTasks.length > 0 ?
+      this.updateWindowPanel() : this.сongigureInitialValues();
   };
 
   bindListeners() {
@@ -258,14 +262,13 @@ export class RenderTomato {
             !target.closest('.burger-popup__edit-button')) {
             taskText.contentEditable = false;
             const newTitleTask = taskText.textContent.trim();
-
             if (newTitleTask === '') {
               taskText.textContent = titleTask;
             } else {
               taskText.textContent = newTitleTask;
-              const taskToUpdate = timer.findTaskById(taskId);
+              const taskToUpdate =
+                this.controller.handleRenameTask(taskId, newTitleTask);
               if (taskToUpdate) {
-                taskToUpdate.setTitle(newTitleTask);
                 this.updateWindowPanel();
               }
             }
@@ -275,6 +278,7 @@ export class RenderTomato {
         const delButton = task.querySelector('.burger-popup__delete-button');
         delButton.addEventListener('click', () => {
           this.modalOverlay.style.display = 'block';
+          this.modalOverlay.setAttribute('data-task-id', taskId);
         });
 
         let taskDeleted = false;
@@ -288,11 +292,23 @@ export class RenderTomato {
           if (target.classList.contains('modal-delete__delete-button') &&
             !taskDeleted) {
             taskDeleted = true;
-            timer.removeTask(taskId);
-            task.remove();
-            this.updateCountList();
+            const taskIdToDelete = this.modalOverlay
+              .getAttribute('data-task-id');
+            const taskToRemove = document
+              .querySelector(`[data-id="${taskIdToDelete}"]`);
+            const firstTaskId = this.controller
+              .handleRemoveTask(taskIdToDelete);
+
+            if (taskIdToDelete === firstTaskId) {
+              formWindow.timerText.textContent = '00:00';
+            }
+
+            if (taskToRemove) {
+              taskToRemove.remove();
+              this.updateCountList();
+              this.deleteButtonClick();
+            }
             this.closeModal(this.modalOverlay);
-            this.deleteButtonClick();
           }
         });
       }
@@ -377,7 +393,7 @@ export class RenderTomato {
   // Обновить общее время, требуемое на выполнение задач
   updateDeadlineTimer(minutes) {
     const deadlineTimerText = this.main.deadlineTimerText;
-    if (minutes === 0) {
+    if (minutes <= 0) {
       deadlineTimerText.textContent = 'Время вышло';
       return;
     }
@@ -397,14 +413,13 @@ export class RenderTomato {
     }
   }
 
-  // Добавить задачу в список
+  // Отобразить добавленную задачу на странице
   addTaskToList(task, deadlineTime) {
     const questTasks = this.main.questTasks;
     const tasks = questTasks.querySelectorAll('li');
     const countList = tasks.length + 1;
     const row = new RenderTask(task, countList);
     mount(questTasks, row);
-    timer.addTask(task);
 
     this.updateDeadlineTimer(deadlineTime);
     this.updateWindowPanel();

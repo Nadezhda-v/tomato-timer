@@ -70,7 +70,6 @@ export class Timer {
 
     if (timeInSeconds <= 0) {
       clearTimeout(this.timerId);
-      console.log(this.activeTask);
 
       if (this.activeTask.count === 0) {
         this.runTask(this.pause);

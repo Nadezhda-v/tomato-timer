@@ -28,4 +28,16 @@ export class Controller {
   handleStartButton(updateDeadlineTimer) {
     this.model.startButton(updateDeadlineTimer);
   }
+
+  handleRenameTask(taskId, newTitleTask) {
+    return this.model.renameTask(taskId, newTitleTask);
+  }
+
+  handleRemoveTask(taskId) {
+    return this.model.removeTask(taskId);
+  }
+
+  handleListTasks() {
+    return this.model.clearListTasks();
+  }
 }
