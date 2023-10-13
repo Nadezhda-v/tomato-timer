@@ -16,3 +16,27 @@ export class Task {
     return this;
   }
 }
+
+export class ImportantTask extends Task {
+  importance = 'important';
+
+  constructor(title, count = 0) {
+    super(title, count);
+  }
+}
+
+export class DefaultTask extends Task {
+  importance = 'default';
+
+  constructor(title, count = 0) {
+    super(title, count);
+  }
+}
+
+export class UnimportantTask extends Task {
+  importance = 'unimportant';
+
+  constructor(title, count = 0) {
+    super(title, count);
+  }
+}
